@@ -1,0 +1,20 @@
+void setup() {
+  pinMode(9, OUTPUT);
+  digitalWrite(9, LOW);
+
+  Serial.begin(9600);
+}
+
+void loop() {
+  if (Serial.available()) {
+    char command = Serial.read();
+
+    if (command == '1') {
+      digitalWrite(9, HIGH);
+    }
+
+    if (command == '0') {
+      digitalWrite(9, LOW);
+    }
+  }
+}
