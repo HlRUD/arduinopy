@@ -1,20 +1,47 @@
-void setup() {
-  pinMode(9, OUTPUT);
-  digitalWrite(9, LOW);
+const int pins[] = {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13};
+const int pinCount = 12;
 
+void setup() {
   Serial.begin(9600);
+
+  for (int i = 0; i < pinCount; i++) {
+    pinMode(pins[i], OUTPUT);
+    digitalWrite(pins[i], LOW);
+  }
 }
 
 void loop() {
   if (Serial.available()) {
-    char command = Serial.read();
+    String command = Serial.readStringUntil('\n');
+    command.trim();
 
-    if (command == '1') {
-      digitalWrite(9, HIGH);
+    // ON
+    if (command.startsWith("ON:")) {
+      int pin = command.substring(3).toInt();
+      digitalWrite(pin, HIGH);
     }
 
-    if (command == '0') {
-      digitalWrite(9, LOW);
+    // OFF
+    else if (command.startsWith("OFF:")) {
+      int pin = command.substring(4).toInt();
+      digitalWrite(pin, LOW);
+    }
+
+    // PWM
+    else if (command.startsWith("PWM:")) {
+      int separator = command.indexOf(':', 4);
+
+      int pin = command.substring(4, separator).toInt();
+      int value = command.substring(separator + 1).toInt();
+
+      analogWrite(pin, value);
+    }
+
+    // ALL OFF
+    else if (command == "ALL:OFF") {
+      for (int i = 0; i < pinCount; i++) {
+        digitalWrite(pins[i], LOW);
+      }
     }
   }
 }
